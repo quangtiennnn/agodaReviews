@@ -95,7 +95,7 @@ def reviewInfomation(driver: webdriver):
 def url_edited(url):
     driver = webdriver.Chrome()
     driver.get(url)
-    time.sleep(2)
+    time.sleep(4)
     elem = driver.find_element(By.CSS_SELECTOR, "a[data-element-name='property-card-content']")
     href = elem.get_attribute('href')
     return href.replace('https://www.agoda.com/','https://www.agoda.com/vi-vn/')
@@ -136,4 +136,29 @@ def hotelReviews(id:str):
                 break
     except:
         pass
-     
+    
+
+def split_list(lst, parts=4):
+    # Calculate the length of each part
+    part_len = len(lst) // parts
+    
+    # Calculate the number of elements in the last part
+    remainder = len(lst) % parts
+    
+    # Create a list to hold the split parts
+    split_parts = []
+    
+    # Iterate over the list and split it into parts
+    i = 0
+    for _ in range(parts):
+        # Calculate the length of the current part
+        current_len = part_len + (1 if remainder > 0 else 0)
+        
+        # Slice the list to create the current part
+        split_parts.append(lst[i:i+current_len])
+        
+        # Move to the next part
+        i += current_len
+        remainder -= 1
+    
+    return split_parts
