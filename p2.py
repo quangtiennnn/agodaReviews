@@ -6,7 +6,7 @@ count = 0
 new_df = split_list(data.hotel_id,4)[2] 
 numofhotel  = len(new_df.hotel_id)
 
-for hotel_id in new_df.hotel_id:
+for hotel_id in new_df:
     start = time.time()
     hotelReviews(hotel_id)
     end = time.time()
