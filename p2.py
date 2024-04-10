@@ -4,7 +4,7 @@ data = pd.read_csv('city1.csv')
 
 count = 0
 new_df = split_list(data.hotel_id,4)[2] 
-numofhotel  = len(new_df.hotel_id)
+numofhotel  = len(new_df)
 
 for hotel_id in new_df:
     start = time.time()
