@@ -7,7 +7,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 # from seleniumFunction import *
 from selenium.webdriver.chrome.options import Options
-
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 # ==================== GLOBAL VARIABLES
 # Set Chrome options:
@@ -93,49 +94,54 @@ def reviewInfomation(driver: webdriver):
     return data
 
 def url_edited(url):
-    driver = webdriver.Chrome()
-    driver.get(url)
-    time.sleep(4)
-    elem = driver.find_element(By.CSS_SELECTOR, "a[data-element-name='property-card-content']")
-    href = elem.get_attribute('href')
-    return href.replace('https://www.agoda.com/','https://www.agoda.com/vi-vn/')
+    try:
+        driver = webdriver.Chrome()
+        driver.get(url)
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "a[data-element-name='property-card-content']")))
+        elem = driver.find_element(By.CSS_SELECTOR, "a[data-element-name='property-card-content']")
+        href = elem.get_attribute('href')
+        return href.replace('https://www.agoda.com/','https://www.agoda.com/vi-vn/')
+    except Exception:
+        return 0
 
 
 def hotelReviews(id:str):
     driver = webdriver.Chrome()
     old_url = df[df.hotel_id == int(id)].url.iloc[0]
-    driver.get(url_edited(old_url))
-    
-    filepath = f'hotelReviews/{id}.csv'
+    new_url = url_edited(old_url)
+    if not new_url == 0:
+        driver.get(new_url)
+        
+        filepath = f'hotelReviews/{id}.csv'
 
-    if len(filepath.split('/')) > 1:
-        directory = '/'.join(filepath.split('/')[:-1])
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    
-    data = ['reviewername','national','groupname','roomtype','staydetail','reviewtitle','comment','positive','negative','score']
-    with open(filepath, mode='a', newline='',encoding='utf-8-sig') as file:
-        csv_writer = csv.writer(file)
-        csv_writer.writerow(data)
-    try:
-        button = driver.find_element(By.CSS_SELECTOR, 'i.ficon.ficon-24.ficon-carrouselarrow-right')
-        # Move it to button element to able to click
-        driver.execute_script("arguments[0].scrollIntoView(); window.scrollBy(0, -200);", button)
-        time.sleep(2)
-        while True:
-            try:
-                data = reviewInfomation(driver)
-                with open(filepath, mode='a', newline='',encoding='utf-8-sig') as file:
-                    csv_writer = csv.writer(file)
-                    csv_writer.writerows(data)
-                time.sleep(2)
-                button.click()
-                time.sleep(2)
-                
-            except Exception as e:
-                break
-    except:
-        pass
+        if len(filepath.split('/')) > 1:
+            directory = '/'.join(filepath.split('/')[:-1])
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        
+        data = ['reviewername','national','groupname','roomtype','staydetail','reviewtitle','comment','positive','negative','score']
+        with open(filepath, mode='a', newline='',encoding='utf-8-sig') as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerow(data)
+        try:
+            button = driver.find_element(By.CSS_SELECTOR, 'i.ficon.ficon-24.ficon-carrouselarrow-right')
+            # Move it to button element to able to click
+            driver.execute_script("arguments[0].scrollIntoView(); window.scrollBy(0, -200);", button)
+            time.sleep(2)
+            while True:
+                try:
+                    data = reviewInfomation(driver)
+                    with open(filepath, mode='a', newline='',encoding='utf-8-sig') as file:
+                        csv_writer = csv.writer(file)
+                        csv_writer.writerows(data)
+                    time.sleep(2)
+                    button.click()
+                    time.sleep(2)
+                    
+                except Exception as e:
+                    break
+        except:
+            return 0
     
 
 def split_list(lst, parts=4):
@@ -161,4 +167,10 @@ def split_list(lst, parts=4):
         i += current_len
         remainder -= 1
     
+
     return split_parts
+
+
+def fileExisted(id):
+    print('Skiped!!')
+    return os.path.exists(f'hotelReviews/{id}.csv')
