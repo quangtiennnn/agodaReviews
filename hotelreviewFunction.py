@@ -20,7 +20,8 @@ chrome_options.add_argument("--disable-application-cache")
 chrome_options.add_argument("--disable-cache")
 chrome_options.add_argument("--disk-cache-size=0")
 
-city = pd.read_csv('city.csv')
+global df
+df = pd.read_csv('city.csv')
 
 
 def reviewInfomation(driver: webdriver):
@@ -100,9 +101,9 @@ def url_edited(url):
     return href.replace('https://www.agoda.com/','https://www.agoda.com/vi-vn/')
 
 
-def hotelReviews(id:str,city):
+def hotelReviews(id:str):
     driver = webdriver.Chrome()
-    old_url = city[city.hotel_id == int(id)].url.iloc[0]
+    old_url = df[df.hotel_id == int(id)].url.iloc[0]
     driver.get(url_edited(old_url))
     
     filepath = f'hotelReviews/{id}.csv'
@@ -124,7 +125,6 @@ def hotelReviews(id:str,city):
         while True:
             try:
                 data = reviewInfomation(driver)
-                print(data)
                 with open(filepath, mode='a', newline='',encoding='utf-8-sig') as file:
                     csv_writer = csv.writer(file)
                     csv_writer.writerows(data)
@@ -133,7 +133,6 @@ def hotelReviews(id:str,city):
                 time.sleep(2)
                 
             except Exception as e:
-                print(e)
                 break
     except:
         pass
