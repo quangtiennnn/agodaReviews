@@ -120,6 +120,12 @@ def hotelReviews(id:str):
             os.makedirs(directory)
         
         data = ['reviewername','national','groupname','roomtype','staydetail','reviewtitle','comment','positive','negative','score']
+        try:
+            new_data = reviewInfomation(driver)
+            data.append(new_data)
+        except:
+            pass
+        
         with open(filepath, mode='a', newline='',encoding='utf-8-sig') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerow(data)
@@ -172,5 +178,4 @@ def split_list(lst, parts=4):
 
 
 def fileExisted(id):
-    print('Skiped!!')
     return os.path.exists(f'hotelReviews/{id}.csv')
