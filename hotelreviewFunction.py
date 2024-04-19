@@ -119,16 +119,15 @@ def hotelReviews(id:str):
         if not os.path.exists(directory):
             os.makedirs(directory)
         
-        data = ['reviewername','national','groupname','roomtype','staydetail','reviewtitle','comment','positive','negative','score']
+        header = ['reviewername','national','groupname','roomtype','staydetail','reviewtitle','comment','positive','negative','score']
         try:
-            new_data = reviewInfomation(driver)
-            data.append(new_data)
+            data = reviewInfomation(driver)
+            with open(filepath, mode='a', newline='',encoding='utf-8-sig') as file:
+                csv_writer = csv.writer(file)
+                csv_writer.writerow(header)
+                csv_writer.writerows(data)
         except:
             pass
-        
-        with open(filepath, mode='a', newline='',encoding='utf-8-sig') as file:
-            csv_writer = csv.writer(file)
-            csv_writer.writerow(data)
         try:
             button = driver.find_element(By.CSS_SELECTOR, 'i.ficon.ficon-24.ficon-carrouselarrow-right')
             # Move it to button element to able to click
